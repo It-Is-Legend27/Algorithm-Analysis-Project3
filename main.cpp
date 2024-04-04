@@ -1,15 +1,16 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <ctime>
 #include <random>
 #include "bst.hpp"
-#include "avlt.hpp"
+// #include "avlt.hpp"
 
 using namespace std;
 
 int main()
 {
-	BinarySearchTree<string> b;
+	BinarySearchTree<string> bstree;
 	int num, x;
 	srand(unsigned(time(NULL)));
 	cout << "Nodes as they are inserted:  \n\n";
@@ -17,30 +18,31 @@ int main()
 	{
 		num = rand() % 100;
 		cout << num << "  ";
-		b.insert(to_string(num));
+		bstree.insert(to_string(num));
 	}
 	cout << endl;
 	cout << "What number to you want to search for? ";
 	cin >> x;
-	if (b.search(to_string(x)))
+	if (bstree.search(to_string(x)))
 		cout << "The number is in the list. \n";
 	else
 		cout << "The number is not in the list. \n";
-  b.inOrderPrint();
-  cout << "What number do you want to delete? ";
-  cin >> x;
-  b.deleteItem(to_string(x));
-  b.inOrderPrint();
-	cout << endl << endl;
+	bstree.inOrderPrint();
+	cout << "What number do you want to delete? ";
+	cin >> x;
+	bstree.deleteItem(to_string(x));
+	bstree.inOrderPrint();
+	cout << endl
+		 << endl;
 	cout << "Nodes printed in order:  \n";
-	b.inOrderPrint();
-	cout << endl;
+	bstree.inOrderPrint();
+	cout << '\n';
 	cout << "Nodes printed pre-order:  \n";
-	b.preOrderPrint();
-	cout << endl;
+	bstree.preOrderPrint();
+	cout << '\n';
 	cout << "Nodes printed in post-order:  \n";
-	b.postOrderPrint();
-	cout << endl;
-	b.GraphVizOut("mygraph.dot");
+	bstree.postOrderPrint();
+	cout << '\n';
+	bstree.GraphVizOut("mygraph.dot");
 	return 0;
 }

@@ -15,55 +15,56 @@ template <class T>
 class BinarySearchTree
 {
 private:
+	template <class F>
 	struct Node
 	{
-		T data{};
+		F data{};
 		Node *left{nullptr};
 		Node *right{nullptr};
 
 		Node() {}
 
-		Node(T data, Node *left = nullptr, Node *right = nullptr) : data(this->data), left(this->left), right(this->right) {}
+		Node(F data, Node *left = nullptr, Node *right = nullptr) : data(this->data), left(this->left), right(this->right) {}
 	};
-	Node *root;
+	Node<T> *root{nullptr};
 
 	// Recursive private function to insert a value into the tree
-	void insertNode(Node *&ptr, T x);
+	void insertNode(Node<T> *&ptr, T x);
 
 	// Recursive private function to print an in order listing of nodes in tree
-	void inOrder(Node *ptr) const;
+	void inOrder(Node<T> *ptr) const;
 
 	// Recursive private function to print a pre-order listing of nodes in tree
-	void preOrder(Node *ptr) const;
+	void preOrder(Node<T> *ptr) const;
 
 	// Recursive private function to print a post-order listing of nodes in tree
-	void postOrder(Node *ptr) const;
+	void postOrder(Node<T> *ptr) const;
 
 	// Pivate function to delete a node from tree that is pointed to by the
 	// reference pointer ptr
-	void del(Node *&ptr);
+	void del(Node<T> *&ptr);
 
 	// Recursive private function to delete node containing specific value, x
-	void deleteNode(Node *&ptr, T x);
+	void deleteNode(Node<T> *&ptr, T x);
 
 	// Recursive private function to delete all nodes in the tree
-	void destroySubtree(Node *&ptr);
+	void destroySubtree(Node<T> *&ptr);
 
-	bool searchItem(Node *ptr, T x);
+	bool searchItem(Node<T> *ptr, T x);
 
 	// Credit to:  Terry Griffin
 	// Creates GraphViz code so the tree can be visualized.  Prints
 	// unique node id's by traversing the tree.
-	void GraphVizGetIds(Node *nodePtr, ofstream &VizOut);
+	void GraphVizGetIds(Node<T> *nodePtr, ofstream &VizOut);
 
 	// Credit to:  Terry Griffin
 	// Partnered with the above method, but on this pass it
 	// writes out the actual data from each node.
-	void GraphVizMakeConnections(Node *nodePtr, ofstream &VizOut);
+	void GraphVizMakeConnections(Node<T> *nodePtr, ofstream &VizOut);
 
 public:
 	// Constructor
-	BinarySearchTree();
+	BinarySearchTree(){}
 
 	// Destructor - deallocates all memory by calling destroySubtree
 	~BinarySearchTree();
@@ -96,12 +97,6 @@ public:
 };
 
 template <class T>
-BinarySearchTree<T>::BinarySearchTree()
-{
-	root = nullptr;
-}
-
-template <class T>
 BinarySearchTree<T>::~BinarySearchTree()
 {
 	destroySubtree(root);
@@ -110,7 +105,7 @@ BinarySearchTree<T>::~BinarySearchTree()
 // destroySubtree recursively visits and deletes each node
 // from the lowest level (leaves) up
 template <class T>
-void BinarySearchTree<T>::destroySubtree(Node *&ptr)
+void BinarySearchTree<T>::destroySubtree(Node<T> *&ptr)
 {
 	if (ptr)
 	{
@@ -122,11 +117,11 @@ void BinarySearchTree<T>::destroySubtree(Node *&ptr)
 }
 
 template <class T>
-void BinarySearchTree<T>::insertNode(Node *&ptr, T x)
+void BinarySearchTree<T>::insertNode(Node<T> *&ptr, T x)
 {
 	// If ptr points to nullptr, the insertion position has been found
 	if (ptr == nullptr)
-		ptr = new Node(x);
+		ptr = new Node<T>(x);
 
 	// If ptr does not point to nullptr, decide whether to traverse
 	// down the left subtree or right subtree by comparing value
@@ -145,7 +140,7 @@ void BinarySearchTree<T>::insert(T x)
 }
 
 template <class T>
-void BinarySearchTree<T>::inOrder(Node *ptr) const
+void BinarySearchTree<T>::inOrder(Node<T> *ptr) const
 {
 	if (ptr) // Equivalent to if(ptr != nullptr)
 	{
@@ -163,7 +158,7 @@ void BinarySearchTree<T>::inOrderPrint()
 }
 
 template <class T>
-void BinarySearchTree<T>::preOrder(Node *ptr) const
+void BinarySearchTree<T>::preOrder(Node<T> *ptr) const
 {
 	if (ptr) // same as if (ptr != nullptr)
 	{
@@ -181,7 +176,7 @@ void BinarySearchTree<T>::preOrderPrint()
 }
 
 template <class T>
-void BinarySearchTree<T>::postOrder(Node *ptr) const
+void BinarySearchTree<T>::postOrder(Node<T> *ptr) const
 {
 	if (ptr)
 	{
@@ -200,10 +195,10 @@ void BinarySearchTree<T>::postOrderPrint()
 
 // Deletes a node using right child promotion
 template <class T>
-void BinarySearchTree<T>::del(Node *&ptr)
+void BinarySearchTree<T>::del(Node<T> *&ptr)
 {
-	Node *delPtr = ptr;
-	Node *attach;
+	Node<T> *delPtr = ptr;
+	Node<T> *attach;
 	if (ptr->left == nullptr && ptr->right == nullptr) // no children
 		ptr = nullptr;
 	else if (ptr->right == nullptr) // only left child
@@ -224,7 +219,7 @@ void BinarySearchTree<T>::del(Node *&ptr)
 // Recursive function that searches for node to be deleted and then
 // passes the appropriate pointer to method del
 template <class T>
-void BinarySearchTree<T>::deleteNode(Node *&ptr, T x)
+void BinarySearchTree<T>::deleteNode(Node<T> *&ptr, T x)
 {
 	if (ptr)
 	{
@@ -251,7 +246,7 @@ void BinarySearchTree<T>::deleteAll()
 }
 
 template <class T>
-bool BinarySearchTree<T>::searchItem(Node *ptr, T x)
+bool BinarySearchTree<T>::searchItem(Node<T> *ptr, T x)
 {
 	if (ptr)
 	{
@@ -272,7 +267,7 @@ bool BinarySearchTree<T>::search(T x)
 }
 
 template <class T>
-void BinarySearchTree<T>::GraphVizGetIds(Node *nodePtr, ofstream &VizOut)
+void BinarySearchTree<T>::GraphVizGetIds(Node<T> *nodePtr, ofstream &VizOut)
 {
 	if (nodePtr)
 	{
@@ -283,7 +278,7 @@ void BinarySearchTree<T>::GraphVizGetIds(Node *nodePtr, ofstream &VizOut)
 }
 
 template <class T>
-void BinarySearchTree<T>::GraphVizMakeConnections(Node *nodePtr, ofstream &VizOut)
+void BinarySearchTree<T>::GraphVizMakeConnections(Node<T> *nodePtr, ofstream &VizOut)
 {
 	if (nodePtr)
 	{
