@@ -3,6 +3,7 @@
 #include <ctime>
 #include <random>
 #include "bst.hpp"
+#include "avlt.hpp"
 
 using namespace std;
 
