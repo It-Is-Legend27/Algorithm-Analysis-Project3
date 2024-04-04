@@ -1,3 +1,5 @@
+#ifndef AVL_TEMPLATE
+#define AVL_TEMPLATE
 #include <iostream>
 #include <ctime>
 #include <cstddef>
@@ -323,3 +325,4 @@ void AVLTree<T>::ComputeAvlValues(Node *&nodePtr)
             RotateLeft(nodePtr);
     }
 }
+#endif
