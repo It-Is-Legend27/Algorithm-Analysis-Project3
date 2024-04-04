@@ -17,13 +17,13 @@ class BinarySearchTree
 private:
 	struct Node
 	{
-		T data;
-		Node *left, *right;
-		Node(T x)
-		{
-			data = x;
-			left = right = nullptr;
-		}
+		T data{};
+		Node *left{nullptr};
+		Node *right{nullptr};
+
+		Node() {}
+
+		Node(T data, Node *left = nullptr, Node *right = nullptr) : data(this->data), left(this->left), right(this->right) {}
 	};
 	Node *root;
 
