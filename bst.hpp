@@ -24,7 +24,7 @@ private:
 
 		Node() {}
 
-		Node(F data, Node *left = nullptr, Node *right = nullptr) : data(this->data), left(this->left), right(this->right) {}
+		Node(F data, Node *left = nullptr, Node *right = nullptr) : data(data), left(left), right(right) {}
 	};
 	Node<T> *root{nullptr};
 
@@ -120,9 +120,8 @@ template <class T>
 void BinarySearchTree<T>::insertNode(Node<T> *&ptr, T x)
 {
 	// If ptr points to nullptr, the insertion position has been found
-	if (ptr == nullptr)
-		ptr = new Node<T>(x);
-
+	if (!ptr)
+	ptr = new Node<T>(x);
 	// If ptr does not point to nullptr, decide whether to traverse
 	// down the left subtree or right subtree by comparing value
 	// to be inserted with current node.
