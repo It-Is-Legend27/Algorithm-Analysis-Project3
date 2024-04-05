@@ -3,6 +3,7 @@
 #include <string>
 #include <ctime>
 #include <random>
+#include <vector>
 #include "bst.hpp"
 // #include "avlt.hpp"
 
@@ -10,7 +11,7 @@ using namespace std;
 
 int main()
 {
-	BinarySearchTree<string> bstree;
+	binary_search_tree<string> bstree;
 	ifstream infile("words.txt");
 	string word;
 
@@ -20,14 +21,14 @@ int main()
 	}
 
 	cout << "Nodes printed in order:  \n";
-	bstree.inOrderPrint();
+	bstree.in_order_print();
 	cout << '\n';
 	cout << "Nodes printed pre-order:  \n";
-	bstree.preOrderPrint();
+	bstree.pre_order_print();
 	cout << '\n';
 	cout << "Nodes printed in post-order:  \n";
-	bstree.postOrderPrint();
+	bstree.post_order_print();
 	cout << '\n';
-	bstree.GraphVizOut("mygraph.dot");
+	bstree.graph_viz("mygraph.dot");
 	return 0;
 }

@@ -12,7 +12,7 @@ class AVLTree
 private:
     struct Node
     {
-        T data{};
+        T m_data{};
         size_t count{0};        // Count of duplicate values
         long balance_factor{0}; // AVL balance factor
         Node *left{nullptr};
@@ -21,15 +21,15 @@ private:
         // Constructor for creating a new Node
         Node() {}
 
-        Node(T data, Node *left = nullptr, Node *right = nullptr, size_t count = 1, long balance_factor = 0) : data(this->data), left(this->left), right(this->right), count(this->count), balance_factor(this->balance_factor) {}
+        Node(T m_data, Node *left = nullptr, Node *right = nullptr, size_t count = 1, long balance_factor = 0) : m_data(this->m_data), left(this->left), right(this->right), count(this->count), balance_factor(this->balance_factor) {}
     };
 
     Node *root{nullptr};
-    void InsertNode(Node *&ptr, T data);
+    void InsertNode(Node *&ptr, T m_data);
     void inorder(Node *nodePtr);
     void preorder(Node *nodePtr);
     void postorder(Node *nodePtr);
-    void deleteNode(T, Node *&);
+    void remove_node(T, Node *&);
     void makeDeletion(Node *&nodePtr);
     size_t Height(Node *nodePtr);
     void ComputeAvlValues(Node *&nodePtr);
@@ -41,16 +41,16 @@ public:
     AVLTree() {}
     ~AVLTree();
 
-    void Insert(T data);
+    void Insert(T m_data);
     void ShowInorder() { inorder(root); };
     void ShowPreorder() { preorder(root); };
     void ShowPostorder() { postorder(root); };
     bool SearchNode(T value);
-    void Remove(T value) { deleteNode(value, root); };
+    void Remove(T value) { remove_node(value, root); };
     size_t TreeHeight();
-    void GraphVizGetIds(Node *nodePtr, ofstream &VizOut);
-    void GraphVizMakeConnections(Node *nodePtr, ofstream &VizOut);
-    void GraphVizOut(string filename);
+    void graph_viz_ids(Node *nodePtr, ofstream &VizOut);
+    void graph_viz_connections(Node *nodePtr, ofstream &VizOut);
+    void graph_viz(string filename);
 
 private:
     void RotateLeft(Node *&Node);
@@ -66,24 +66,24 @@ AVLTree<T>::~AVLTree()
 // a pointer (root initially) and an integer to be added to the tree.
 ///////////////////////////////////////////////////////////////////////////////
 template <class T>
-void AVLTree<T>::InsertNode(Node *&ptr, T data)
+void AVLTree<T>::InsertNode(Node *&ptr, T m_data)
 {
     if (!ptr) // Insertion position found
-        ptr = new Node(data);
-    else if (x == ptr->data)
+        ptr = new Node(m_data);
+    else if (x == ptr->m_data)
         ptr->count++;       // Update count of duplicate value
-    else if (x < ptr->data) // Insert in the left subtree
-        InsertNode(ptr->left, data);
+    else if (x < ptr->m_data) // Insert in the left subtree
+        InsertNode(ptr->left, m_data);
     else // Insert in the right subtree
-        InsertNode(ptr->right, data);
+        InsertNode(ptr->right, m_data);
 }
 
 // The Insert method is a public method that calls InsertNode.
 ////////////////////////////////////////////////////////////////
 template <class T>
-void AVLTree<T>::Insert(T data)
+void AVLTree<T>::Insert(T m_data)
 {
-    InsertNode(root, data);
+    InsertNode(root, m_data);
     ComputeAvlValues(root);
 }
 
@@ -140,12 +140,12 @@ bool AVLTree<T>::SearchNode(T value)
 }
 
 template <class T>
-void AVLTree<T>::deleteNode(T value, Node *&nodePtr)
+void AVLTree<T>::remove_node(T value, Node *&nodePtr)
 {
     if (value < nodePtr->value)
-        deleteNode(value, nodePtr->left);
+        remove_node(value, nodePtr->left);
     else if (value > nodePtr->value)
-        deleteNode(value, nodePtr->right);
+        remove_node(value, nodePtr->right);
     else
         makeDeletion(nodePtr);
 }
@@ -213,22 +213,22 @@ size_t AVLTree<T>::TreeHeight()
 // tree traversal.
 //////////////////////////////////////////////////////////////////////
 template <class T>
-void AVLTree<T>::GraphVizGetIds(Node *nodePtr, ofstream &VizOut)
+void AVLTree<T>::graph_viz_ids(Node *nodePtr, ofstream &VizOut)
 {
     if (nodePtr)
     {
-        GraphVizGetIds(nodePtr->left, VizOut);
+        graph_viz_ids(nodePtr->left, VizOut);
         VizOut << "node" << nodePtr->value << "[label=\"" << nodePtr->value << " (" << nodePtr->balance_factor << "/" << nodePtr->count << ")\"]" << endl;
-        GraphVizGetIds(nodePtr->right, VizOut);
+        graph_viz_ids(nodePtr->right, VizOut);
     }
 }
 
 // Credit to:  Terry Griffin
 // This method is partnered with the above method, but on this pass it
-// writes out the actual data from each node.
+// writes out the actual m_data from each node.
 ///////////////////////////////////////////////////////////////////////
 template <class T>
-void AVLTree<T>::GraphVizMakeConnections(Node *nodePtr, ofstream &VizOut)
+void AVLTree<T>::graph_viz_connections(Node *nodePtr, ofstream &VizOut)
 {
     static int x = 0;
     if (nodePtr)
@@ -238,23 +238,23 @@ void AVLTree<T>::GraphVizMakeConnections(Node *nodePtr, ofstream &VizOut)
             VizOut << "node" << nodePtr->value << "->" << "node" << nodePtr->left->value << endl;
         if (nodePtr->right)
             VizOut << "node" << nodePtr->value << "->" << "node" << nodePtr->right->value << endl;
-        GraphVizMakeConnections(nodePtr->left, VizOut);
-        GraphVizMakeConnections(nodePtr->right, VizOut);
+        graph_viz_connections(nodePtr->left, VizOut);
+        graph_viz_connections(nodePtr->right, VizOut);
     }
 }
 
-// Recieves a filename to place the GraphViz data into.
-// It then calls the above two graphviz methods to create a data file
+// Recieves a filename to place the GraphViz m_data into.
+// It then calls the above two graphviz methods to create a m_data file
 // that can be used to visualize your expression tree.
 //////////////////////////////////////////////////////////////////////
 template <class T>
-void AVLTree<T>::GraphVizOut(string filename)
+void AVLTree<T>::graph_viz(string filename)
 {
     ofstream VizOut;
     VizOut.open(filename.c_str());
     VizOut << "digraph { \n";
-    GraphVizGetIds(root, VizOut);
-    GraphVizMakeConnections(root, VizOut);
+    graph_viz_ids(root, VizOut);
+    graph_viz_connections(root, VizOut);
     VizOut << "}";
     VizOut.close();
 }
