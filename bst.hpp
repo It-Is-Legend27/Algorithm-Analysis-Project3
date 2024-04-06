@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <cstddef>
 
 using namespace std;
 
@@ -16,81 +17,69 @@ class binary_search_tree
 {
 private:
 	template <class U>
-	struct Node
+	struct node
 	{
-		U m_data{};
-		Node *left{nullptr};
-		Node *right{nullptr};
+		U data{};
+		node *left{nullptr};
+		node *right{nullptr};
 
-		Node() {}
+		node() {}
 
-		Node(U t_data, Node *t_left = nullptr, Node *t_right = nullptr) : m_data(t_data), left(t_left), right(t_right) {}
+		node(U t_data, node *t_left = nullptr, node *t_right = nullptr) : data(t_data), left(t_left), right(t_right) {}
 	};
 
 	// Root of the tree
-	Node<T> *m_root{nullptr};
+	node<T> *m_root{nullptr};
 
 	// Recursive private function to insert a value into the tree
-	void insert_node(Node<T> *&t_node_ptr, T t_data);
+	void insert_node(node<T> *&t_node_ptr, T t_data);
 
 	// Recursive private function to print an in order listing of nodes in tree
-	void in_order(Node<T> *t_node_ptr) const;
+	void in_order(node<T> *t_node_ptr) const;
 
 	// Recursive private function to print a pre-order listing of nodes in tree
-	void pre_order(Node<T> *t_node_ptr) const;
+	void pre_order(node<T> *t_node_ptr) const;
 
 	// Recursive private function to print a post-order listing of nodes in tree
-	void post_order(Node<T> *t_node_ptr) const;
+	void post_order(node<T> *t_node_ptr) const;
 
 	// Pivate function to delete a node from tree that is pointed to by the
 	// reference pointer t_node_ptr
-	void remove_node(Node<T> *&t_node_ptr);
+	void remove_node(node<T> *&t_node_ptr);
 
 	// Recursive private function to delete node containing specific value, t_data
-	void remove_node(Node<T> *&t_node_ptr, T t_data);
+	void remove_node(node<T> *&t_node_ptr, T t_data);
 
 	// Recursive private function to delete all nodes in the tree
-	void destroy_subtree(Node<T> *&t_node_ptr);
+	void destroy_subtree(node<T> *&t_node_ptr);
 
-	bool search_value(Node<T> *t_node_ptr, T t_data);
+	bool search_value(node<T> *t_node_ptr, T t_data);
 
 	// Credit to:  Terry Griffin
 	// Creates GraphViz code so the tree can be visualized.  Prints
 	// unique node id's by traversing the tree.
-	void graph_viz_ids(Node<T> *nodePtr, ofstream &VizOut);
+	void graph_viz_ids(node<T> *t_node_ptr, ofstream &VizOut);
 
 	// Credit to:  Terry Griffin
 	// Partnered with the above method, but on this pass it
 	// writes out the actual data from each node.
-	void graph_viz_connections(Node<T> *nodePtr, ofstream &VizOut);
+	void graph_viz_connections(node<T> *t_node_ptr, ofstream &VizOut);
 
 public:
 	// Constructor
 	binary_search_tree() {}
 
 	// Destructor - deallocates all memory by calling destroy_subtree
-	~binary_search_tree()
-	{
-		destroy_subtree(m_root);
-	}
+	~binary_search_tree() { clear(); }
 
 	// Public function to insert item t_data into the tree; calls insert_node
-	void insert(T t_data)
-	{
-		insert_node(m_root, t_data);
-	}
+	void insert(T t_data) { insert_node(m_root, t_data); }
 
 	// Public function to delete item t_data from the tree; calls deleteNode
-	void remove(T t_data)
-	{
-		remove_node(m_root, t_data);
-	}
+	void remove(T t_data) { remove_node(m_root, t_data); }
 
 	// Public function to delete all items from the tree
-	void clear()
-	{
-		destroy_subtree(m_root);
-	}
+	void clear() { destroy_subtree(m_root); }
 
 	// Public function to print all nodes in order; calls in_order
 	void in_order_print()
@@ -120,15 +109,15 @@ public:
 	}
 
 	// Credit to:  Terry Griffin
-	// Receives a filename and stores a GraphViz readable file;
+	// Receives a file_path and stores a GraphViz readable file;
 	// calls 	GraphVizGetIds and GraphVizMakeConnections
-	void graph_viz(string filename);
+	void graph_viz(string file_path);
 };
 
 // destroy_subtree recursively visits and deletes each node
 // from the lowest level (leaves) up
 template <class T>
-void binary_search_tree<T>::destroy_subtree(Node<T> *&t_node_ptr)
+void binary_search_tree<T>::destroy_subtree(node<T> *&t_node_ptr)
 {
 	if (t_node_ptr)
 	{
@@ -140,59 +129,59 @@ void binary_search_tree<T>::destroy_subtree(Node<T> *&t_node_ptr)
 }
 
 template <class T>
-void binary_search_tree<T>::insert_node(Node<T> *&t_node_ptr, T t_data)
+void binary_search_tree<T>::insert_node(node<T> *&t_node_ptr, T t_data)
 {
 	// If t_node_ptr points to nullptr, the insertion position has been found
 	if (!t_node_ptr)
-		t_node_ptr = new Node<T>(t_data);
+		t_node_ptr = new node<T>(t_data);
 	// If t_node_ptr does not point to nullptr, decide whether to traverse
 	// down the left subtree or right subtree by comparing value
 	// to be inserted with current node.
-	else if (t_data <= t_node_ptr->m_data) // Node should be inserted in left subtree
+	else if (t_data <= t_node_ptr->data) // node should be inserted in left subtree
 		insert_node(t_node_ptr->left, t_data);
-	else // Node should be inserted in right subtree
+	else // node should be inserted in right subtree
 		insert_node(t_node_ptr->right, t_data);
 }
 
 template <class T>
-void binary_search_tree<T>::in_order(Node<T> *t_node_ptr) const
+void binary_search_tree<T>::in_order(node<T> *t_node_ptr) const
 {
 	if (t_node_ptr) // Equivalent to if(t_node_ptr != nullptr)
 	{
 		in_order(t_node_ptr->left);
-		cout << t_node_ptr->m_data << "   ";
+		cout << t_node_ptr->data << "   ";
 		in_order(t_node_ptr->right);
 	}
 }
 
 template <class T>
-void binary_search_tree<T>::pre_order(Node<T> *t_node_ptr) const
+void binary_search_tree<T>::pre_order(node<T> *t_node_ptr) const
 {
 	if (t_node_ptr) // same as if (t_node_ptr != nullptr)
 	{
-		cout << t_node_ptr->m_data << "   ";
+		cout << t_node_ptr->data << "   ";
 		pre_order(t_node_ptr->left);
 		pre_order(t_node_ptr->right);
 	}
 }
 
 template <class T>
-void binary_search_tree<T>::post_order(Node<T> *t_node_ptr) const
+void binary_search_tree<T>::post_order(node<T> *t_node_ptr) const
 {
 	if (t_node_ptr)
 	{
 		post_order(t_node_ptr->left);
 		post_order(t_node_ptr->right);
-		cout << t_node_ptr->m_data << "   ";
+		cout << t_node_ptr->data << "   ";
 	}
 }
 
 // Deletes a node using right child promotion
 template <class T>
-void binary_search_tree<T>::remove_node(Node<T> *&t_node_ptr)
+void binary_search_tree<T>::remove_node(node<T> *&t_node_ptr)
 {
-	Node<T> *delPtr = t_node_ptr;
-	Node<T> *attach;
+	node<T> *delPtr = t_node_ptr;
+	node<T> *attach;
 	if (t_node_ptr->left == nullptr && t_node_ptr->right == nullptr) // no children
 		t_node_ptr = nullptr;
 	else if (t_node_ptr->right == nullptr) // only left child
@@ -213,13 +202,13 @@ void binary_search_tree<T>::remove_node(Node<T> *&t_node_ptr)
 // Recursive function that searches for node to be deleted and then
 // passes the appropriate pointer to method remove_node
 template <class T>
-void binary_search_tree<T>::remove_node(Node<T> *&t_node_ptr, T t_data)
+void binary_search_tree<T>::remove_node(node<T> *&t_node_ptr, T t_data)
 {
 	if (t_node_ptr)
 	{
-		if (t_node_ptr->m_data == t_data)
+		if (t_node_ptr->data == t_data)
 			remove_node(t_node_ptr);
-		else if (t_data < t_node_ptr->m_data)
+		else if (t_data < t_node_ptr->data)
 			remove_node(t_node_ptr->left, t_data);
 		else
 			remove_node(t_node_ptr->right, t_data);
@@ -227,13 +216,13 @@ void binary_search_tree<T>::remove_node(Node<T> *&t_node_ptr, T t_data)
 }
 
 template <class T>
-bool binary_search_tree<T>::search_value(Node<T> *t_node_ptr, T t_data)
+bool binary_search_tree<T>::search_value(node<T> *t_node_ptr, T t_data)
 {
 	if (t_node_ptr)
 	{
-		if (t_data == t_node_ptr->m_data)
+		if (t_data == t_node_ptr->data)
 			return true;
-		else if (t_data < t_node_ptr->m_data)
+		else if (t_data < t_node_ptr->data)
 			return search_value(t_node_ptr->left, t_data);
 		else
 			return search_value(t_node_ptr->right, t_data);
@@ -242,35 +231,35 @@ bool binary_search_tree<T>::search_value(Node<T> *t_node_ptr, T t_data)
 }
 
 template <class T>
-void binary_search_tree<T>::graph_viz_ids(Node<T> *nodePtr, ofstream &VizOut)
+void binary_search_tree<T>::graph_viz_ids(node<T> *t_node_ptr, ofstream &VizOut)
 {
-	if (nodePtr)
+	if (t_node_ptr)
 	{
-		graph_viz_ids(nodePtr->left, VizOut);
-		VizOut << " node" << nodePtr->m_data << " [label=\"" << nodePtr->m_data << "\"];" << '\n';
-		graph_viz_ids(nodePtr->right, VizOut);
+		graph_viz_ids(t_node_ptr->left, VizOut);
+		VizOut << " node" << t_node_ptr->data << " [label=\"" << t_node_ptr->data << "\"];" << '\n';
+		graph_viz_ids(t_node_ptr->right, VizOut);
 	}
 }
 
 template <class T>
-void binary_search_tree<T>::graph_viz_connections(Node<T> *nodePtr, ofstream &VizOut)
+void binary_search_tree<T>::graph_viz_connections(node<T> *t_node_ptr, ofstream &VizOut)
 {
-	if (nodePtr)
+	if (t_node_ptr)
 	{
-		if (nodePtr->left)
-			VizOut << "  node" << nodePtr->m_data << "->" << " node" << nodePtr->left->m_data << '\n';
-		if (nodePtr->right)
-			VizOut << "  node" << nodePtr->m_data << "->" << " node" << nodePtr->right->m_data << '\n';
-		graph_viz_connections(nodePtr->left, VizOut);
-		graph_viz_connections(nodePtr->right, VizOut);
+		if (t_node_ptr->left)
+			VizOut << "  node" << t_node_ptr->data << "->" << " node" << t_node_ptr->left->data << '\n';
+		if (t_node_ptr->right)
+			VizOut << "  node" << t_node_ptr->data << "->" << " node" << t_node_ptr->right->data << '\n';
+		graph_viz_connections(t_node_ptr->left, VizOut);
+		graph_viz_connections(t_node_ptr->right, VizOut);
 	}
 }
 
 template <class T>
-void binary_search_tree<T>::graph_viz(string filename)
+void binary_search_tree<T>::graph_viz(string file_path)
 {
 	ofstream VizOut;
-	VizOut.open(filename);
+	VizOut.open(file_path);
 	VizOut << "digraph g { \n";
 	graph_viz_ids(m_root, VizOut);
 	graph_viz_connections(m_root, VizOut);

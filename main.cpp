@@ -3,15 +3,14 @@
 #include <string>
 #include <ctime>
 #include <random>
-#include <vector>
 #include "bst.hpp"
-// #include "avlt.hpp"
+#include "avlt.hpp"
 
 using namespace std;
 
 int main()
 {
-	binary_search_tree<string> bstree;
+	avl_tree<string> bstree;
 	ifstream infile("words.txt");
 	string word;
 
