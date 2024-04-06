@@ -31,7 +31,7 @@ private:
 	// Root of the tree
 	Node<T> *m_root{nullptr};
 
-	// size of the treel
+	// size of the tree
 	size_t m_size{0};
 
 	// Recursive private function to insert a value into the tree
