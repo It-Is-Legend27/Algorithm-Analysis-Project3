@@ -25,5 +25,8 @@ int main()
 	cout << "Nodes printed in order:  \n";
 	bstree.in_order_print();
 	avltree.in_order_print();
+
+	cout << bstree.size() << '\n';
+	cout << avltree.size() << '\n';
 	return 0;
 }
