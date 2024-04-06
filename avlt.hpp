@@ -6,10 +6,15 @@
 
 using namespace std;
 
+/// @brief A class template for creating AVL trees for any given
+/// data type.
+/// @tparam T The type for the data to be stored in the tree.
 template <class T>
 class AVLTree
 {
 private:
+    /// @brief A class template for nodes of a specified data type.
+	/// @tparam U The data type to be stored in the node.
     template <class U>
     struct Node
     {

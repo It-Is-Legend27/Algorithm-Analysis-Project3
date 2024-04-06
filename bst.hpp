@@ -12,45 +12,60 @@ using namespace std;
 // that at any node, all values in the left subtree are less than or equal
 // to the node and all nodes in the right subtree are greater than the node.
 
+/// @brief A class template for creating binary search trees for any given
+/// data type.
+/// @tparam T The type for the data to be stored in the tree.
 template <class T>
 class BinarySearchTree
 {
 private:
+	/// @brief A class template for nodes of a specified data type.
+	/// @tparam U The data type to be stored in the node.
 	template <class U>
 	struct Node
 	{
-		U data{};
-		Node *left{nullptr};
-		Node *right{nullptr};
+		U data{};			  // Data to be stored in the Node
+		Node *left{nullptr};  // Pointer to left child Node
+		Node *right{nullptr}; // Pointer to right child Node
 
+		/// @brief Creates a new instance of Node.
 		Node() {}
 
+		/// @brief Creates a new instance of Node.
+		/// @param t_data Data to be stored.
+		/// @param t_left Pointer to left child.
+		/// @param t_right Pointer to right child.
 		Node(U t_data, Node *t_left = nullptr, Node *t_right = nullptr) : data(t_data), left(t_left), right(t_right) {}
 	};
 
-	// Root of the tree
-	Node<T> *m_root{nullptr};
+	Node<T> *m_root{nullptr}; // Root of the tree
+	size_t m_size{0};		  // Size of the tree (i.e, number of nodes in the tree).
 
-	// size of the tree
-	size_t m_size{0};
-
-	// Recursive private function to insert a value into the tree
+	/// @brief Inserts a new Node with the provided data.
+	/// @param t_node_ptr Pointer to subtree, a Node.
+	/// @param t_data Data to be stored in the Node.
 	void insert_node(Node<T> *&t_node_ptr, T t_data);
 
-	// Recursive private function to print an in order listing of nodes in tree
+	/// @brief Prints in-order traversal of a subtree.
+	/// @param t_node_ptr Pointer to subtree, a Node.
 	void in_order(Node<T> *t_node_ptr) const;
 
-	// Recursive private function to print a pre-order listing of nodes in tree
+	/// @brief Prints pre-order traversal of a subtree.
+	/// @param t_node_ptr Pointer to subtree, a Node.
 	void pre_order(Node<T> *t_node_ptr) const;
 
-	// Recursive private function to print a post-order listing of nodes in tree
+	/// @brief Prints post-order traversal of a subtree.
+	/// @param t_node_ptr Pointer to subtree, a Node.
 	void post_order(Node<T> *t_node_ptr) const;
 
-	// Pivate function to delete a node from tree that is pointed to by the
-	// reference pointer t_node_ptr
-	void remove_node(Node<T> *&t_node_ptr);
+	/// @brief Removes the Node pointed to by the specified Node pointer.
+	/// Uses right-child promotion.
+	/// @param t_node_ptr  Node pointer.
+	void delete_node(Node<T> *&t_node_ptr);
 
-	// Recursive private function to delete node containing specific value, t_data
+	/// @brief Removes the Node containing a specific value from the subtree.
+	/// @param t_node_ptr Pointer to subtree, a Node.
+	/// @param t_data Value to be removed from the tree.
 	void remove_node(Node<T> *&t_node_ptr, T t_data);
 
 	// Recursive private function to delete all nodes in the tree
@@ -115,7 +130,7 @@ public:
 	// Receives a file_path and stores a GraphViz readable file;
 	// calls 	GraphVizGetIds and GraphVizMakeConnections
 	void graph_viz(string file_path);
-    
+
 	size_t size();
 };
 
@@ -187,7 +202,7 @@ void BinarySearchTree<T>::post_order(Node<T> *t_node_ptr) const
 
 // Deletes a node using right child promotion
 template <class T>
-void BinarySearchTree<T>::remove_node(Node<T> *&t_node_ptr)
+void BinarySearchTree<T>::delete_node(Node<T> *&t_node_ptr)
 {
 	Node<T> *delPtr = t_node_ptr;
 	Node<T> *attach;
@@ -217,7 +232,7 @@ void BinarySearchTree<T>::remove_node(Node<T> *&t_node_ptr, T t_data)
 	if (t_node_ptr)
 	{
 		if (t_node_ptr->data == t_data)
-			remove_node(t_node_ptr);
+			delete_node(t_node_ptr);
 		else if (t_data < t_node_ptr->data)
 			remove_node(t_node_ptr->left, t_data);
 		else
