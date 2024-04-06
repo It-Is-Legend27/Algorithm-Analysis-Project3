@@ -7,44 +7,47 @@
 using namespace std;
 
 template <class T>
-class avl_tree
+class AVLTree
 {
 private:
     template <class U>
-    struct node
+    struct Node
     {
         U data{};
         size_t count{0};        // Count of duplicate values
         long balance_factor{0}; // AVL balance factor
-        node *left{nullptr};
-        node *right{nullptr};
+        Node *left{nullptr};
+        Node *right{nullptr};
 
         // Constructor for creating a new node
-        node() {}
+        Node() {}
 
-        node(U t_data, node *t_left = nullptr, node *t_right = nullptr, size_t t_count = 1, long t_balance_factor = 0) : data(t_data), left(t_left), right(t_right), count(t_count), balance_factor(t_balance_factor) {}
+        Node(U t_data, Node *t_left = nullptr, Node *t_right = nullptr, size_t t_count = 1, long t_balance_factor = 0) : data(t_data), left(t_left), right(t_right), count(t_count), balance_factor(t_balance_factor) {}
     };
 
-    node<T> *m_root{nullptr};
+    Node<T> *m_root{nullptr};
+    size_t m_size{0};
 
-    void insert_node(node<T> *&t_node_ptr, T t_data);
-    void destroy_subtree(node<T> *&t_node_ptr);
-    void in_order(node<T> *t_node_ptr);
-    void pre_order(node<T> *t_node_ptr);
-    void post_order(node<T> *t_node_ptr);
-    void remove_node(T, node<T> *&);
-    void delete_node(node<T> *&t_node_ptr);
-    size_t sub_tree_height(node<T> *t_node_ptr);
-    void compute_avl_values(node<T> *&t_node_ptr);
-    bool left_heavy(node<T> *t_node_ptr);
-    bool right_heavy(node<T> *t_node_ptr);
-    void graph_viz_ids(node<T> *t_node_ptr, ofstream &VizOut);
-    void graph_viz_connections(node<T> *t_node_ptr, ofstream &VizOut);
+    void insert_node(Node<T> *&t_node_ptr, T t_data);
+    void destroy_subtree(Node<T> *&t_node_ptr);
+    void in_order(Node<T> *t_node_ptr);
+    void pre_order(Node<T> *t_node_ptr);
+    void post_order(Node<T> *t_node_ptr);
+    void remove_node(T, Node<T> *&);
+    void delete_node(Node<T> *&t_node_ptr);
+    size_t sub_tree_height(Node<T> *t_node_ptr);
+    void compute_avl_values(Node<T> *&t_node_ptr);
+    bool left_heavy(Node<T> *t_node_ptr);
+    bool right_heavy(Node<T> *t_node_ptr);
+    void graph_viz_ids(Node<T> *t_node_ptr, ofstream &VizOut);
+    void graph_viz_connections(Node<T> *t_node_ptr, ofstream &VizOut);
+    void rotate_left(Node<T> *&node);
+    void rotate_right(Node<T> *&t_node_ptr);
 
 public:
-    long balance_factor(node<T> *t_node_ptr);
-    avl_tree() {}
-    ~avl_tree() { clear(); }
+    long balance_factor(Node<T> *t_node_ptr);
+    AVLTree() {}
+    ~AVLTree() { clear(); }
 
     void clear() { destroy_subtree(m_root); }
 
@@ -66,14 +69,11 @@ public:
     size_t height() { return sub_tree_height(m_root); }
 
     void graph_viz(string file_path);
-
-private:
-    void rotate_left(node<T> *&node);
-    void rotate_right(node<T> *&t_node_ptr);
+    size_t size();
 };
 
 template <class T>
-void avl_tree<T>::destroy_subtree(node<T> *&t_node_ptr)
+void AVLTree<T>::destroy_subtree(Node<T> *&t_node_ptr)
 {
     if (t_node_ptr)
     {
@@ -81,6 +81,7 @@ void avl_tree<T>::destroy_subtree(node<T> *&t_node_ptr)
         destroy_subtree(t_node_ptr->right);
         delete t_node_ptr;
         t_node_ptr = nullptr;
+        m_size -= 1;
     }
 }
 
@@ -88,10 +89,13 @@ void avl_tree<T>::destroy_subtree(node<T> *&t_node_ptr)
 // a pointer (m_root initially) and an integer to be added to the tree.
 ///////////////////////////////////////////////////////////////////////////////
 template <class T>
-void avl_tree<T>::insert_node(node<T> *&t_node_ptr, T t_data)
+void AVLTree<T>::insert_node(Node<T> *&t_node_ptr, T t_data)
 {
     if (!t_node_ptr) // Insertion position found
-        t_node_ptr = new node<T>(t_data);
+    {
+        t_node_ptr = new Node<T>(t_data);
+        m_size += 1;
+    }
     else if (t_data == t_node_ptr->data)
         t_node_ptr->count++;            // Update count of duplicate t_data
     else if (t_data < t_node_ptr->data) // insert in the left subtree
@@ -102,44 +106,47 @@ void avl_tree<T>::insert_node(node<T> *&t_node_ptr, T t_data)
 
 // Prints the in_order traversal of the tree.
 template <class T>
-void avl_tree<T>::in_order(node<T> *t_node_ptr)
+void AVLTree<T>::in_order(Node<T> *t_node_ptr)
 {
     if (t_node_ptr)
     {
         in_order(t_node_ptr->left);
-        cout << t_node_ptr->data << " " << "(" << t_node_ptr->balance_factor << "/" << t_node_ptr->count << ")\n";
+        cout << t_node_ptr->data << " "
+             << "(" << t_node_ptr->balance_factor << "/" << t_node_ptr->count << ")\n";
         in_order(t_node_ptr->right);
     }
 }
 
 // Prints the post_order traversal of the tree.
 template <class T>
-void avl_tree<T>::post_order(node<T> *t_node_ptr)
+void AVLTree<T>::post_order(Node<T> *t_node_ptr)
 {
     if (t_node_ptr)
     {
         post_order(t_node_ptr->left);
         post_order(t_node_ptr->right);
-        cout << t_node_ptr->data << " " << "(" << t_node_ptr->balance_factor << "/" << t_node_ptr->count << ")\n";
+        cout << t_node_ptr->data << " "
+             << "(" << t_node_ptr->balance_factor << "/" << t_node_ptr->count << ")\n";
     }
 }
 
 // Prints the post_order traversal of the tree.
 template <class T>
-void avl_tree<T>::pre_order(node<T> *t_node_ptr)
+void AVLTree<T>::pre_order(Node<T> *t_node_ptr)
 {
     if (t_node_ptr)
     {
-        cout << t_node_ptr->data << " " << "(" << t_node_ptr->balance_factor << "/" << t_node_ptr->count << ")\n";
+        cout << t_node_ptr->data << " "
+             << "(" << t_node_ptr->balance_factor << "/" << t_node_ptr->count << ")\n";
         pre_order(t_node_ptr->left);
         pre_order(t_node_ptr->right);
     }
 }
 
 template <class T>
-bool avl_tree<T>::search_value(T t_data)
+bool AVLTree<T>::search_value(T t_data)
 {
-    node<T> *t_node_ptr = m_root;
+    Node<T> *t_node_ptr = m_root;
     while (t_node_ptr)
     {
         if (t_node_ptr->data == t_data)
@@ -153,7 +160,7 @@ bool avl_tree<T>::search_value(T t_data)
 }
 
 template <class T>
-void avl_tree<T>::remove_node(T t_data, node<T> *&t_node_ptr)
+void AVLTree<T>::remove_node(T t_data, Node<T> *&t_node_ptr)
 {
     if (t_data < t_node_ptr->data)
         remove_node(t_data, t_node_ptr->left);
@@ -164,9 +171,9 @@ void avl_tree<T>::remove_node(T t_data, node<T> *&t_node_ptr)
 }
 
 template <class T>
-void avl_tree<T>::delete_node(node<T> *&t_node_ptr)
+void AVLTree<T>::delete_node(Node<T> *&t_node_ptr)
 {
-    node<T> *temp_node_ptr;
+    Node<T> *temp_node_ptr;
     if (t_node_ptr == nullptr)
         cout << "Cannot delete empty node.\n";
     else if (t_node_ptr->right == nullptr)
@@ -174,12 +181,14 @@ void avl_tree<T>::delete_node(node<T> *&t_node_ptr)
         temp_node_ptr = t_node_ptr;
         t_node_ptr = t_node_ptr->left;
         delete temp_node_ptr;
+        m_size -= 1;
     }
     else if (t_node_ptr->left == nullptr)
     {
         temp_node_ptr = t_node_ptr;
         t_node_ptr = t_node_ptr->right;
         delete temp_node_ptr;
+        m_size -= 1;
     }
     else
     {
@@ -190,12 +199,13 @@ void avl_tree<T>::delete_node(node<T> *&t_node_ptr)
         temp_node_ptr = t_node_ptr;
         t_node_ptr = t_node_ptr->right;
         delete temp_node_ptr;
+        m_size -= 1;
     }
     compute_avl_values(t_node_ptr);
 }
 
 template <class T>
-size_t avl_tree<T>::sub_tree_height(node<T> *t_node_ptr)
+size_t AVLTree<T>::sub_tree_height(Node<T> *t_node_ptr)
 {
     int left_height = 0;
     int right_height = 0;
@@ -220,7 +230,7 @@ size_t avl_tree<T>::sub_tree_height(node<T> *t_node_ptr)
 // tree traversal.
 //////////////////////////////////////////////////////////////////////
 template <class T>
-void avl_tree<T>::graph_viz_ids(node<T> *t_node_ptr, ofstream &VizOut)
+void AVLTree<T>::graph_viz_ids(Node<T> *t_node_ptr, ofstream &VizOut)
 {
     if (t_node_ptr)
     {
@@ -231,21 +241,23 @@ void avl_tree<T>::graph_viz_ids(node<T> *t_node_ptr, ofstream &VizOut)
 }
 
 template <class T>
-void avl_tree<T>::graph_viz_connections(node<T> *t_node_ptr, ofstream &VizOut)
+void AVLTree<T>::graph_viz_connections(Node<T> *t_node_ptr, ofstream &VizOut)
 {
     if (t_node_ptr)
     {
         if (t_node_ptr->left)
-            VizOut << "  node" << t_node_ptr->data << "->" << " node" << t_node_ptr->left->data << '\n';
+            VizOut << "  node" << t_node_ptr->data << "->"
+                   << " node" << t_node_ptr->left->data << '\n';
         if (t_node_ptr->right)
-            VizOut << "  node" << t_node_ptr->data << "->" << " node" << t_node_ptr->right->data << '\n';
+            VizOut << "  node" << t_node_ptr->data << "->"
+                   << " node" << t_node_ptr->right->data << '\n';
         graph_viz_connections(t_node_ptr->left, VizOut);
         graph_viz_connections(t_node_ptr->right, VizOut);
     }
 }
 
 template <class T>
-void avl_tree<T>::graph_viz(string file_path)
+void AVLTree<T>::graph_viz(string file_path)
 {
     ofstream VizOut;
     VizOut.open(file_path);
@@ -257,26 +269,26 @@ void avl_tree<T>::graph_viz(string file_path)
 }
 
 template <class T>
-bool avl_tree<T>::left_heavy(node<T> *t_node_ptr)
+bool AVLTree<T>::left_heavy(Node<T> *t_node_ptr)
 {
     return (sub_tree_height(t_node_ptr->left) > sub_tree_height(t_node_ptr->right));
 }
 
 template <class T>
-bool avl_tree<T>::right_heavy(node<T> *t_node_ptr)
+bool AVLTree<T>::right_heavy(Node<T> *t_node_ptr)
 {
     return (sub_tree_height(t_node_ptr->right) > sub_tree_height(t_node_ptr->left));
 }
 
 template <class T>
-void avl_tree<T>::rotate_left(node<T> *&t_node_ptr)
+void AVLTree<T>::rotate_left(Node<T> *&t_node_ptr)
 {
     if (t_node_ptr->right != nullptr && left_heavy(t_node_ptr->right))
     {
         rotate_right(t_node_ptr->right);
     }
 
-    node<T> *Temp;
+    Node<T> *Temp;
     Temp = t_node_ptr->right;
     t_node_ptr->right = Temp->left;
     Temp->left = t_node_ptr;
@@ -286,13 +298,13 @@ void avl_tree<T>::rotate_left(node<T> *&t_node_ptr)
 }
 
 template <class T>
-void avl_tree<T>::rotate_right(node<T> *&t_node_ptr)
+void AVLTree<T>::rotate_right(Node<T> *&t_node_ptr)
 {
     if (t_node_ptr->left != nullptr && right_heavy(t_node_ptr->left))
     {
         rotate_left(t_node_ptr->left);
     }
-    node<T> *Temp;
+    Node<T> *Temp;
     Temp = t_node_ptr->left;
     t_node_ptr->left = Temp->right;
     Temp->right = t_node_ptr;
@@ -301,7 +313,7 @@ void avl_tree<T>::rotate_right(node<T> *&t_node_ptr)
 }
 
 template <class T>
-long avl_tree<T>::balance_factor(node<T> *t_node_ptr)
+long AVLTree<T>::balance_factor(Node<T> *t_node_ptr)
 {
     size_t leftheight = sub_tree_height(t_node_ptr->left);
     size_t rightheight = sub_tree_height(t_node_ptr->right);
@@ -309,7 +321,7 @@ long avl_tree<T>::balance_factor(node<T> *t_node_ptr)
 }
 
 template <class T>
-void avl_tree<T>::compute_avl_values(node<T> *&t_node_ptr)
+void AVLTree<T>::compute_avl_values(Node<T> *&t_node_ptr)
 {
     if (t_node_ptr)
     {
@@ -322,4 +334,11 @@ void avl_tree<T>::compute_avl_values(node<T> *&t_node_ptr)
             rotate_left(t_node_ptr);
     }
 }
+
+template <class T>
+size_t AVLTree<T>::size()
+{
+    return m_size;
+}
+
 #endif

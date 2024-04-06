@@ -10,24 +10,20 @@ using namespace std;
 
 int main()
 {
-	avl_tree<string> bstree;
+	BinarySearchTree<string> bstree;
+	AVLTree<string> avltree;
 	ifstream infile("words.txt");
 	string word;
 
+	// Read in all words from file
 	while(infile && infile >> word)
 	{
 		bstree.insert(word);
+		avltree.insert(word);
 	}
 
 	cout << "Nodes printed in order:  \n";
 	bstree.in_order_print();
-	cout << '\n';
-	cout << "Nodes printed pre-order:  \n";
-	bstree.pre_order_print();
-	cout << '\n';
-	cout << "Nodes printed in post-order:  \n";
-	bstree.post_order_print();
-	cout << '\n';
-	bstree.graph_viz("mygraph.dot");
+	avltree.in_order_print();
 	return 0;
 }
