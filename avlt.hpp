@@ -40,6 +40,11 @@ private:
     Node<T> *m_root{nullptr};
     size_t m_size{0};
 
+    /// @brief Calculates the sum of the heights of each node of a subtree.
+    /// @param t_node_ptr Pointer to root of subtree.
+    /// @return Sum of the heights of the tree.
+    void sum_heights(Node<T> *t_node_ptr, size_t &total_height);
+
     /// @brief Inserts a node into the tree.
     /// @param t_node_ptr Pointer to the root of the subtree.
     /// @param t_data Data for node to store.
@@ -108,6 +113,10 @@ private:
     void rotate_right(Node<T> *&t_node_ptr);
 
 public:
+    /// @brief Computes the averahe node height of the tree.
+    /// @return Average node height.
+    double average_height();
+
     /// @brief Computes the balance factor of a specific node.
     /// @param t_node_ptr Pointer to node.
     /// @return Balance factor.
@@ -160,6 +169,30 @@ public:
     /// @return Size of the tree.
     size_t size();
 };
+
+template <class T>
+double AVLTree<T>::average_height()
+{
+    size_t total = 0;
+    sum_heights(this->m_root, total);
+
+    double avg_height = (double)total / (double)(this->size());
+
+    return avg_height;
+}
+
+template <class T>
+void AVLTree<T>::sum_heights(Node<T> *t_node_ptr, size_t &total_height)
+{
+    if (!t_node_ptr)
+    {
+        return;
+    }
+
+    sum_heights(t_node_ptr->left, total_height);
+    total_height += sub_tree_height(t_node_ptr);
+    sum_heights(t_node_ptr->right, total_height);
+}
 
 template <class T>
 void AVLTree<T>::destroy_subtree(Node<T> *&t_node_ptr)

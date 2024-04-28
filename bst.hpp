@@ -41,10 +41,15 @@ private:
 	Node<T> *m_root{nullptr}; // Root of the tree
 	size_t m_size{0};		  // Size of the tree (i.e, number of nodes in the tree).
 
+	/// @brief Calculates the sum of the heights of each node of a subtree.
+	/// @param t_node_ptr Pointer to root of subtree.
+	/// @return Sum of the heights of the tree.
+	void sum_heights(Node<T> *t_node_ptr, size_t &total_height);
+
 	/// @brief Calculates height of the subtree.
-    /// @param t_node_ptr Pointer to root of the subtree.
-    /// @return Height of the subtree.
-    size_t sub_tree_height(Node<T> *t_node_ptr);
+	/// @param t_node_ptr Pointer to root of the subtree.
+	/// @return Height of the subtree.
+	size_t sub_tree_height(Node<T> *t_node_ptr);
 
 	/// @brief Inserts a new Node with the provided data.
 	/// @param t_node_ptr Pointer to subtree, a Node.
@@ -94,6 +99,14 @@ private:
 	void graph_viz_connections(Node<T> *t_node_ptr, ofstream &VizOut);
 
 public:
+	/// @brief Computes the averahe node height of the tree.
+	/// @return Average node height.
+	double average_height();
+
+	/// @brief Calculates the height of the tree.
+	/// @return Height of the tree.
+	size_t height() { return sub_tree_height(m_root); }
+
 	// Constructor
 	BinarySearchTree() {}
 
@@ -143,6 +156,48 @@ public:
 
 	size_t size();
 };
+
+template <class T>
+double BinarySearchTree<T>::average_height()
+{
+	size_t total = 0;
+	sum_heights(this->m_root, total);
+
+	double avg_height = (double)total / (double)(this->size());
+
+	return avg_height;
+}
+
+template <class T>
+void BinarySearchTree<T>::sum_heights(Node<T> *t_node_ptr, size_t &total_height)
+{
+	if (!t_node_ptr)
+	{
+		return;
+	}
+
+	sum_heights(t_node_ptr->left, total_height);
+	total_height += sub_tree_height(t_node_ptr);
+	sum_heights(t_node_ptr->right, total_height);
+}
+
+template <class T>
+size_t BinarySearchTree<T>::sub_tree_height(Node<T> *t_node_ptr)
+{
+	int left_height = 0;
+	int right_height = 0;
+	if (t_node_ptr == nullptr)
+		return 0;
+	else
+	{
+		left_height = sub_tree_height(t_node_ptr->left);
+		right_height = sub_tree_height(t_node_ptr->right);
+	}
+	if (left_height > right_height)
+		return 1 + left_height;
+	else
+		return 1 + right_height;
+}
 
 // destroy_subtree recursively visits and deletes each node
 // from the lowest level (leaves) up

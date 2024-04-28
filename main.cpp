@@ -1,7 +1,9 @@
 // Angel Badillo, Samuel Olatunde
 // CMPS 5243 270 - Project 3
 // Description:
-// Text here.
+// This program constructs a Binary Search Tree and an AVL Tree from words
+// in a text file. After constructing the trees, the program reports the height
+// of each tree and the average node height of each tree.
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -20,17 +22,28 @@ int main()
 	string word;
 
 	// Read in all words from file
-	while(infile && infile >> word)
+	while (infile && infile >> word)
 	{
 		bstree.insert(word);
 		avltree.insert(word);
 	}
 
-	cout << "Nodes printed in order:  \n";
-	bstree.in_order_print();
-	avltree.in_order_print();
+	cout << "Angel Badillo, Samuel Olatunde\n"
+		 << "CMPS 5243 270 - Project 3\n"
+		 << "Description:\n"
+		 << "This program constructs a Binary Search Tree and an AVL Tree from words\n"
+		 << "in a text file. After constructing the trees, the program reports the height\n"
+		 << "of each tree and the average node height of each tree.\n";
+		
+	cout << string(100, '-') << "\n\n";
 
-	cout << bstree.size() << '\n';
-	cout << avltree.size() << '\n';
+	// Print out heights of each tree
+	cout << "Height of Binary Search Tree:              " << bstree.height() << '\n';
+	cout << "Height of AVL Tree:                        " << avltree.height() << '\n';
+
+	// Print out average node heights of each tree
+	cout << "Average Node Height of Binary Search Tree: " << bstree.average_height() << '\n';
+	cout << "Average Node Height of AVL Tree:           " << avltree.average_height() << '\n';
+
 	return 0;
 }
