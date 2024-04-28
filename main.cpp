@@ -45,5 +45,9 @@ int main()
 	cout << "Average Node Height of Binary Search Tree: " << bstree.average_height() << '\n';
 	cout << "Average Node Height of AVL Tree:           " << avltree.average_height() << '\n';
 
+	// Print out total number of nodes in each tree
+	cout << "Number of Nodes in Binary Search Tree:     " << bstree.size() << '\n';
+	cout << "Number of Nodes in AVL Tree:               " << avltree.size() << '\n';
+	
 	return 0;
 }
