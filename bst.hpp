@@ -1,4 +1,4 @@
-// Header file for binary search tree class
+// Header file for Binar Search Tree Class
 #ifndef BST_TEMPLATE
 #define BST_TEMPLATE
 #include <fstream>
@@ -41,6 +41,11 @@ private:
 	Node<T> *m_root{nullptr}; // Root of the tree
 	size_t m_size{0};		  // Size of the tree (i.e, number of nodes in the tree).
 
+	/// @brief Calculates height of the subtree.
+    /// @param t_node_ptr Pointer to root of the subtree.
+    /// @return Height of the subtree.
+    size_t sub_tree_height(Node<T> *t_node_ptr);
+
 	/// @brief Inserts a new Node with the provided data.
 	/// @param t_node_ptr Pointer to subtree, a Node.
 	/// @param t_data Data to be stored in the Node.
@@ -68,9 +73,14 @@ private:
 	/// @param t_data Value to be removed from the tree.
 	void remove_node(Node<T> *&t_node_ptr, T t_data);
 
-	// Recursive private function to delete all nodes in the tree
+	/// @brief Deletes the subtree.
+	/// @param t_node_ptr Pointer to root of subtree.
 	void destroy_subtree(Node<T> *&t_node_ptr);
 
+	/// @brief Checks if a value exists in the subtree.
+	/// @param t_node_ptr Pointer to root of subtree.
+	/// @param t_data Value to search for.
+	/// @return true if vaue exists, false otherwise.
 	bool search_value(Node<T> *t_node_ptr, T t_data);
 
 	// Credit to:  Terry Griffin
