@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <cstddef>
+#include <algorithm>
 
 using namespace std;
 
@@ -184,19 +185,16 @@ void BinarySearchTree<T>::sum_heights(Node<T> *t_node_ptr, size_t &total_height)
 template <class T>
 size_t BinarySearchTree<T>::sub_tree_height(Node<T> *t_node_ptr)
 {
-	int left_height = 0;
-	int right_height = 0;
-	if (t_node_ptr == nullptr)
-		return 0;
-	else
-	{
-		left_height = sub_tree_height(t_node_ptr->left);
-		right_height = sub_tree_height(t_node_ptr->right);
-	}
-	if (left_height > right_height)
-		return 1 + left_height;
-	else
-		return 1 + right_height;
+	if(!t_node_ptr)
+	return 0;
+
+	if(!t_node_ptr->left && !t_node_ptr->right)
+	return 0;
+
+	size_t left_height = sub_tree_height(t_node_ptr->left);
+	size_t right_height = sub_tree_height(t_node_ptr->right);
+
+	return max(left_height, right_height) + 1;
 }
 
 // destroy_subtree recursively visits and deletes each node

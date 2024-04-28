@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstddef>
+#include <algorithm>
 
 using namespace std;
 
@@ -329,19 +330,16 @@ void AVLTree<T>::delete_node(Node<T> *&t_node_ptr)
 template <class T>
 size_t AVLTree<T>::sub_tree_height(Node<T> *t_node_ptr)
 {
-    int left_height = 0;
-    int right_height = 0;
-    if (t_node_ptr == nullptr)
-        return 0;
-    else
-    {
-        left_height = sub_tree_height(t_node_ptr->left);
-        right_height = sub_tree_height(t_node_ptr->right);
-    }
-    if (left_height > right_height)
-        return 1 + left_height;
-    else
-        return 1 + right_height;
+	if(!t_node_ptr)
+	return 0;
+
+	if(!t_node_ptr->left && !t_node_ptr->right)
+	return 0;
+
+	size_t left_height = sub_tree_height(t_node_ptr->left);
+	size_t right_height = sub_tree_height(t_node_ptr->right);
+
+	return max(left_height, right_height) + 1;
 }
 
 // Credit to:  Terry Griffin
